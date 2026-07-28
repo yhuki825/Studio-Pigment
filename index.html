@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>スタジオピグメント｜お絵かきムービー制作スタジオ（東京・町田）</title>
+<meta name="description" content="スタジオピグメントは、手描きイラストが動きだす「お絵かきムービー」を軸にしたプロモーション動画制作スタジオです。ヒアリングからストーリー構成、イラスト、編集まで一貫して制作します。">
+<meta property="og:title" content="スタジオピグメント｜お絵かきムービー制作スタジオ">
+<meta property="og:description" content="手描きの線で、伝わる時間をつくる。東京・町田の動画制作スタジオ。">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23FBFAF7'/%3E%3Cpath d='M16 5c6 4 9 7 9 11.5S21 26 16 26 7 21 7 16.5 10 9 16 5z' fill='%23E0402B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   Studio Pigment — brand site
+   palette : paper / sumi ink / 4 pigments
+   type    : Zen Old Mincho (display) / Zen Kaku Gothic New (body)
+             IBM Plex Mono (labels)
+   ============================================================ */
+
+@property --pig {syntax:'<color>'; inherits:true; initial-value:#E0402B;}
+@property --pig-ink {syntax:'<color>'; inherits:true; initial-value:#C02E1B;}
+
+:root{
+  --paper:#FBFAF7;
+  --paper-2:#F1EDE4;
+  --paper-3:#E6E0D3;
+  --ink:#14140F;
+  --ink-2:#4A4840;
+  --ink-3:#8A867A;
+
+  --pig:#E0402B;        /* vermilion  */
+  --pig-ink:#C02E1B;
+
+  --vermilion:#E0402B;  --vermilion-ink:#C02E1B;
+  --ultramarine:#2A3FA8; --ultramarine-ink:#22338A;
+  --ochre:#E0A32E;      --ochre-ink:#A8741A;
+  --viridian:#1C7A5A;   --viridian-ink:#15624A;
+
+  --f-disp:"Zen Old Mincho", "Yu Mincho", serif;
+  --f-body:"Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, monospace;
+
+  --rail:96px;
+  --pad:clamp(20px, 5vw, 72px);
+  --maxw:1240px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  transition:--pig .7s var(--ease), --pig-ink .7s var(--ease);
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-weight:400;
+  line-height:1.95;
+  letter-spacing:.02em;
+  font-feature-settings:"palt" 1;
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;}
+::selection{background:var(--pig);color:var(--paper);}
+
+/* paper grain ------------------------------------------------ */
+body::after{
+  content:"";position:fixed;inset:0;z-index:900;pointer-events:none;
+  opacity:.42;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E");
+}
+
+/* ---------- utility ---------- */
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--pad);}
+.label{
+  font-family:var(--f-mono);font-size:.68rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--ink-3);
+}
+.label--pig{color:var(--pig-ink);}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+
+/* ============================================================
+   header
+   ============================================================ */
+.hdr{
+  position:fixed;inset:0 0 auto 0;z-index:800;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+  padding:22px var(--pad);
+  transition:padding .4s var(--ease), background .4s var(--ease), box-shadow .4s var(--ease);
+}
+.hdr.is-stuck{
+  padding:12px var(--pad);
+  background:color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter:blur(10px);
+  box-shadow:0 1px 0 rgba(20,20,15,.09);
+}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand__mark{width:26px;height:26px;flex:none;overflow:visible;}
+.brand__mark path{fill:var(--pig);transition:fill .7s var(--ease);}
+.brand__txt{display:flex;flex-direction:column;line-height:1.15;}
+.brand__en{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.2em;}
+.brand__ja{font-size:.62rem;letter-spacing:.28em;color:var(--ink-3);}
+
+.nav{display:flex;align-items:center;gap:26px;}
+.nav a{
+  font-family:var(--f-mono);font-size:.72rem;letter-spacing:.16em;
+  position:relative;padding-block:6px;color:var(--ink-2);
+  transition:color .3s;
+}
+.nav a::after{
+  content:"";position:absolute;left:0;bottom:0;height:1px;width:100%;
+  background:var(--pig);transform:scaleX(0);transform-origin:left;
+  transition:transform .4s var(--ease);
+}
+.nav a:hover,.nav a.is-active{color:var(--ink);}
+.nav a:hover::after,.nav a.is-active::after{transform:scaleX(1);}
+
+.burger{display:none;width:40px;height:40px;position:relative;z-index:1000;}
+.burger span{
+  position:absolute;left:9px;width:22px;height:1.5px;background:var(--ink);
+  transition:transform .4s var(--ease), opacity .3s;
+}
+.burger span:nth-child(1){top:16px;}
+.burger span:nth-child(2){top:23px;}
+.burger.is-open span:nth-child(1){transform:translateY(3.5px) rotate(15deg);}
+.burger.is-open span:nth-child(2){transform:translateY(-3.5px) rotate(-15deg);}
+
+/* mobile drawer */
+.drawer{
+  position:fixed;inset:0;z-index:950;background:var(--paper);
+  display:flex;flex-direction:column;justify-content:center;gap:4px;
+  padding:0 var(--pad);
+  clip-path:inset(0 0 100% 0);visibility:hidden;
+  transition:clip-path .6s var(--ease), visibility 0s .6s;
+}
+.drawer.is-open{clip-path:inset(0 0 0 0);visibility:visible;transition:clip-path .6s var(--ease);}
+.drawer a{
+  display:flex;align-items:baseline;gap:16px;padding:14px 0;
+  border-bottom:1px solid var(--paper-3);
+}
+.drawer a span:first-child{font-family:var(--f-mono);font-size:.66rem;color:var(--pig-ink);letter-spacing:.16em;}
+.drawer a span:last-child{font-family:var(--f-disp);font-size:1.4rem;font-weight:700;}
+
+/* ============================================================
+   left rail — the unbroken ink line (signature)
+   ============================================================ */
+.rail{
+  position:fixed;left:calc(var(--pad) / 2);top:0;bottom:0;width:40px;z-index:700;
+  pointer-events:none;display:flex;align-items:center;
+}
+.rail svg{width:40px;height:64vh;overflow:visible;}
+.rail__base{fill:none;stroke:var(--paper-3);stroke-width:1.4;}
+.rail__draw{fill:none;stroke:var(--pig);stroke-width:1.8;stroke-linecap:round;
+  transition:stroke .7s var(--ease);}
+.rail__dot{fill:var(--pig);transition:fill .7s var(--ease);}
+.rail__cap{
+  position:absolute;left:-2px;font-family:var(--f-mono);font-size:.6rem;
+  letter-spacing:.24em;color:var(--ink-3);
+  writing-mode:vertical-rl;
+}
+.rail__cap--top{top:22px;}
+.rail__cap--bot{bottom:22px;}
+
+/* ============================================================
+   hero
+   ============================================================ */
+.hero{
+  position:relative;min-height:100svh;display:flex;align-items:center;
+  padding:140px 0 80px;
+}
+.hero__grid{
+  display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(24px,5vw,64px);
+  align-items:center;
+}
+.hero__eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:30px;}
+.hero__eyebrow i{display:block;width:34px;height:1px;background:var(--pig);}
+.hero h1{
+  font-family:var(--f-disp);font-weight:900;
+  font-size:clamp(2.1rem,5.6vw,4.3rem);
+  line-height:1.28;letter-spacing:.01em;margin:0 0 34px;
+}
+.hero h1 .ln{display:block;overflow:hidden;}
+.hero h1 .ln > span{display:block;animation:rise 1s var(--ease) both;}
+.hero h1 .ln:nth-child(1) > span{animation-delay:.18s;}
+.hero h1 .ln:nth-child(2) > span{animation-delay:.31s;}
+.hero h1 em{font-style:normal;color:var(--pig-ink);}
+.hero__lead{
+  max-width:34em;font-size:clamp(.92rem,1.05vw,1rem);color:var(--ink-2);
+  margin:0 0 40px;animation:fadeup .9s .62s var(--ease) both;
+}
+.hero__meta{display:flex;flex-wrap:wrap;gap:10px 28px;
+  animation:fadeup .9s .76s var(--ease) both;}
+@keyframes rise{from{transform:translateY(105%);}to{transform:translateY(0);}}
+@keyframes fadeup{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+.hero__meta span{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.14em;color:var(--ink-3);}
+
+/* hero drawing */
+.draw{width:100%;height:auto;overflow:visible;}
+.draw .s{fill:none;stroke:var(--ink);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
+  filter:url(#rough);}
+.draw .s--pig{stroke:var(--pig);}
+.draw .fill{fill:var(--pig);opacity:.14;}
+.draw .anim{stroke-dasharray:var(--len);animation:draw 1.6s .35s var(--ease) both;}
+.draw .fill{animation:fadein .9s 1.7s ease both;}
+@keyframes draw{from{stroke-dashoffset:var(--len);}to{stroke-dashoffset:0;}}
+@keyframes fadein{from{opacity:0;}to{opacity:.14;}}
+
+.hero__scroll{
+  position:absolute;left:var(--pad);bottom:34px;display:flex;align-items:center;gap:12px;
+  font-family:var(--f-mono);font-size:.62rem;letter-spacing:.2em;color:var(--ink-3);
+}
+.hero__scroll i{display:block;width:52px;height:1px;background:var(--paper-3);position:relative;overflow:hidden;}
+.hero__scroll i::after{content:"";position:absolute;inset:0;background:var(--pig);
+  transform:translateX(-100%);animation:sweep 2.6s var(--ease) infinite;}
+@keyframes sweep{50%{transform:translateX(0);}100%{transform:translateX(100%);}}
+
+/* ============================================================
+   marquee band
+   ============================================================ */
+.band{
+  border-block:1px solid var(--paper-3);
+  padding:16px 0;overflow:hidden;background:var(--paper-2);
+}
+.band__track{display:flex;width:max-content;animation:marq 46s linear infinite;}
+.band span{
+  font-family:var(--f-disp);font-weight:700;font-size:clamp(1rem,1.7vw,1.35rem);
+  padding-inline:26px;white-space:nowrap;color:var(--ink-2);
+}
+.band span i{font-style:normal;color:var(--pig);padding-inline:26px;}
+@keyframes marq{to{transform:translateX(-50%);}}
+
+/* ============================================================
+   sections
+   ============================================================ */
+.section{padding:clamp(88px,12vw,168px) 0;position:relative;}
+.section--tint{background:var(--paper-2);}
+.shead{margin-bottom:clamp(40px,6vw,76px);}
+.shead__row{display:flex;align-items:baseline;gap:16px;margin-bottom:20px;}
+.shead__row i{flex:1;height:1px;background:var(--paper-3);}
+.shead h2{
+  font-family:var(--f-disp);font-weight:900;
+  font-size:clamp(1.6rem,3.4vw,2.6rem);line-height:1.5;margin:0;letter-spacing:.02em;
+}
+.shead p{max-width:40em;color:var(--ink-2);margin:18px 0 0;font-size:.95rem;}
+
+/* ---------- concept ---------- */
+.concept{display:grid;grid-template-columns:auto 1fr;gap:clamp(28px,6vw,80px);align-items:start;}
+.vquote{
+  writing-mode:vertical-rl;font-family:var(--f-disp);font-weight:700;
+  font-size:clamp(1.5rem,3.1vw,2.35rem);line-height:1.9;letter-spacing:.16em;
+  height:min(62vh,560px);margin:0;padding-left:6px;
+}
+.vquote em{font-style:normal;color:var(--pig-ink);}
+.vquote small{display:block;font-family:var(--f-mono);font-size:.6rem;letter-spacing:.24em;
+  color:var(--ink-3);margin-right:22px;font-weight:400;}
+.concept__body p{margin:0 0 1.7em;max-width:45em;}
+.concept__media{margin-top:36px;}
+
+.media{
+  position:relative;overflow:hidden;background:var(--paper-3);
+  background-image:
+    linear-gradient(135deg, color-mix(in srgb,var(--pig) 22%,transparent), transparent 60%),
+    repeating-linear-gradient(45deg, rgba(20,20,15,.05) 0 2px, transparent 2px 9px);
+}
+.media img{width:100%;height:100%;object-fit:cover;
+  transition:transform 1.1s var(--ease), filter .6s var(--ease);}
+.media--ratio{aspect-ratio:16/10;}
+.media--tall{aspect-ratio:4/5;}
+.media figcaption{
+  font-family:var(--f-mono);font-size:.62rem;letter-spacing:.16em;color:var(--ink-3);
+}
+figure{margin:0;}
+figure figcaption{margin-top:12px;font-family:var(--f-mono);font-size:.62rem;
+  letter-spacing:.16em;color:var(--ink-3);}
+
+/* ---------- oekaki explain ---------- */
+.explain{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,64px);align-items:center;}
+.frames{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:44px;}
+.frame{
+  background:var(--paper);border:1px solid var(--paper-3);aspect-ratio:1/1;
+  display:flex;align-items:center;justify-content:center;padding:14px;position:relative;
+}
+.frame::before{
+  content:attr(data-n);position:absolute;top:8px;left:10px;
+  font-family:var(--f-mono);font-size:.58rem;color:var(--ink-3);letter-spacing:.14em;
+}
+.frame svg{width:100%;height:auto;}
+.frame .s{fill:none;stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+.frame .s--pig{stroke:var(--pig);}
+
+.merits{list-style:none;margin:52px 0 0;padding:0;display:grid;gap:2px;
+  border-top:1px solid var(--paper-3);}
+.merits li{
+  display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:baseline;
+  padding:26px 4px;border-bottom:1px solid var(--paper-3);
+}
+.merits b{
+  font-family:var(--f-disp);font-size:1.12rem;font-weight:700;letter-spacing:.04em;
+  white-space:nowrap;
+}
+.merits b::before{
+  content:"";display:inline-block;width:9px;height:9px;border-radius:50%;
+  background:var(--pig);margin-right:12px;vertical-align:middle;
+  transition:background .7s var(--ease);
+}
+.merits p{margin:0;color:var(--ink-2);font-size:.92rem;}
+
+/* ---------- service ---------- */
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--paper-3);
+  border:1px solid var(--paper-3);}
+.card{
+  background:var(--paper);padding:clamp(28px,3.4vw,44px);
+  display:flex;flex-direction:column;gap:16px;position:relative;
+  transition:background .5s var(--ease);
+}
+.card::before{
+  content:"";position:absolute;left:0;top:0;width:100%;height:3px;
+  background:var(--c);transform:scaleX(0);transform-origin:left;
+  transition:transform .6s var(--ease);
+}
+.card:hover::before{transform:scaleX(1);}
+.card:hover{background:color-mix(in srgb, var(--c) 5%, var(--paper));}
+.card__chip{
+  width:14px;height:14px;border-radius:50%;background:var(--c);
+}
+.card h3{font-family:var(--f-disp);font-size:1.32rem;font-weight:700;margin:0;letter-spacing:.04em;}
+.card p{margin:0;color:var(--ink-2);font-size:.92rem;}
+.card__tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:8px;}
+.card__tags span{
+  font-family:var(--f-mono);font-size:.6rem;letter-spacing:.12em;color:var(--ink-3);
+  border:1px solid var(--paper-3);border-radius:99px;padding:4px 11px;
+}
+
+/* ---------- process (real sequence → numbered) ---------- */
+.steps{position:relative;display:grid;gap:0;}
+.step{
+  display:grid;grid-template-columns:76px 1fr 1fr;gap:clamp(16px,3vw,48px);
+  padding:34px 0;border-top:1px solid var(--paper-3);align-items:start;
+}
+.step:last-child{border-bottom:1px solid var(--paper-3);}
+.step__n{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.14em;color:var(--pig-ink);padding-top:6px;}
+.step h3{font-family:var(--f-disp);font-size:1.28rem;font-weight:700;margin:0;letter-spacing:.05em;}
+.step h3 small{display:block;font-family:var(--f-mono);font-size:.6rem;letter-spacing:.2em;
+  color:var(--ink-3);font-weight:400;margin-top:8px;}
+.step p{margin:0;color:var(--ink-2);font-size:.92rem;}
+
+/* ---------- works ---------- */
+.filters{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:34px;}
+.filters button{
+  font-family:var(--f-mono);font-size:.66rem;letter-spacing:.14em;
+  border:1px solid var(--paper-3);border-radius:99px;padding:8px 18px;color:var(--ink-2);
+  transition:.35s var(--ease);
+}
+.filters button:hover{border-color:var(--ink-3);}
+.filters button.is-on{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,2vw,26px);}
+.work{position:relative;}
+.work.is-hidden{display:none;}
+.work .media{aspect-ratio:4/3;}
+.work:hover .media img{transform:scale(1.06);}
+.work__cap{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:14px;}
+.work__cap h3{font-family:var(--f-disp);font-size:1rem;font-weight:700;margin:0;letter-spacing:.04em;}
+.work__cap span{font-family:var(--f-mono);font-size:.6rem;letter-spacing:.14em;color:var(--pig-ink);white-space:nowrap;}
+.work__note{font-size:.82rem;color:var(--ink-3);margin:6px 0 0;}
+.works__disclaimer{
+  margin-top:34px;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.1em;color:var(--ink-3);
+}
+
+/* ---------- studio profile ---------- */
+.profile{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,72px);align-items:start;}
+.dl{margin:0;border-top:1px solid var(--paper-3);}
+.dl__row{display:grid;grid-template-columns:132px 1fr;gap:20px;
+  padding:20px 2px;border-bottom:1px solid var(--paper-3);}
+.dl dt{font-family:var(--f-mono);font-size:.66rem;letter-spacing:.14em;color:var(--ink-3);padding-top:5px;}
+.dl dd{margin:0;font-size:.94rem;}
+.dl dd small{display:block;color:var(--ink-3);font-size:.78rem;margin-top:6px;}
+
+/* ---------- footer ---------- */
+.foot{border-top:1px solid var(--paper-3);padding:clamp(56px,7vw,88px) 0 34px;}
+.foot__mark{
+  font-family:var(--f-disp);font-weight:900;line-height:.94;
+  font-size:clamp(2.1rem,9vw,7rem);letter-spacing:.01em;margin:0 0 8px;
+}
+.foot__mark em{font-style:normal;color:var(--pig-ink);}
+.foot__sub{font-family:var(--f-mono);font-size:.66rem;letter-spacing:.24em;color:var(--ink-3);}
+.foot__bottom{
+  display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;
+  margin-top:clamp(40px,6vw,72px);padding-top:22px;border-top:1px solid var(--paper-3);
+}
+.foot__nav{display:flex;flex-wrap:wrap;gap:18px;}
+.foot__nav a,.foot__copy{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.14em;color:var(--ink-3);}
+.foot__nav a:hover{color:var(--ink);}
+
+/* ---------- reveal ---------- */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease);}
+.rv.is-in{opacity:1;transform:none;}
+.rv-d1{transition-delay:.09s;} .rv-d2{transition-delay:.18s;}
+.rv-d3{transition-delay:.27s;} .rv-d4{transition-delay:.36s;}
+
+/* ---------- focus ---------- */
+:focus-visible{outline:2px solid var(--pig-ink);outline-offset:4px;}
+
+/* ============================================================
+   responsive
+   ============================================================ */
+@media (max-width:1100px){
+  .rail{display:none;}
+  .wrap{padding-inline:var(--pad);}
+}
+@media (max-width:900px){
+  body{line-height:1.9;}
+  .nav{display:none;}
+  .burger{display:block;}
+  .hero{min-height:auto;padding:132px 0 72px;}
+  .hero__grid{grid-template-columns:1fr;gap:44px;}
+  .hero__scroll{display:none;}
+  .concept{grid-template-columns:1fr;}
+  .vquote{writing-mode:horizontal-tb;height:auto;padding:0;letter-spacing:.04em;line-height:1.7;}
+  .vquote small{margin:14px 0 0;}
+  .explain{grid-template-columns:1fr;}
+  .cards{grid-template-columns:1fr;}
+  .grid{grid-template-columns:repeat(2,1fr);}
+  .step{grid-template-columns:56px 1fr;}
+  .step p{grid-column:2;}
+  .profile{grid-template-columns:1fr;}
+}
+@media (max-width:560px){
+  .grid{grid-template-columns:1fr;}
+  .frames{grid-template-columns:1fr 1fr;}
+  .frames .frame:last-child{display:none;}
+  .merits li{grid-template-columns:1fr;gap:8px;}
+  .dl__row{grid-template-columns:1fr;gap:4px;}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;}
+  html{scroll-behavior:auto;}
+  .rv{opacity:1;transform:none;}
+  .band__track{animation:none;}
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= SVG defs (pencil roughness) ================= -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="rough">
+    <feTurbulence type="fractalNoise" baseFrequency="0.028" numOctaves="3" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="2.4" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<!-- ================= header ================= -->
+<header class="hdr" id="hdr">
+  <a class="brand" href="#top" aria-label="スタジオピグメント ホーム">
+    <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M16 3c6.6 4.4 10 8.2 10 13.2C26 22.7 21.6 27 16 27S6 22.7 6 16.2C6 11.2 9.4 7.4 16 3z"/>
+    </svg>
+    <span class="brand__txt">
+      <span class="brand__en">STUDIO PIGMENT</span>
+      <span class="brand__ja">スタジオピグメント</span>
+    </span>
+  </a>
+
+  <nav class="nav" aria-label="メインナビゲーション">
+    <a href="#concept">Concept</a>
+    <a href="#movie">Oekaki&nbsp;Movie</a>
+    <a href="#service">Service</a>
+    <a href="#process">Process</a>
+    <a href="#works">Works</a>
+    <a href="#studio">Studio</a>
+  </nav>
+
+  <button class="burger" id="burger" aria-label="メニューを開く" aria-expanded="false" aria-controls="drawer">
+    <span></span><span></span>
+  </button>
+</header>
+
+<!-- mobile drawer -->
+<nav class="drawer" id="drawer" aria-label="モバイルナビゲーション">
+  <a href="#concept"><span>01</span><span>コンセプト</span></a>
+  <a href="#movie"><span>02</span><span>お絵かきムービー</span></a>
+  <a href="#service"><span>03</span><span>できること</span></a>
+  <a href="#process"><span>04</span><span>制作の流れ</span></a>
+  <a href="#works"><span>05</span><span>制作イメージ</span></a>
+  <a href="#studio"><span>06</span><span>スタジオ概要</span></a>
+</nav>
+
+<!-- ================= left rail : one unbroken line ================= -->
+<div class="rail" aria-hidden="true">
+  <span class="rail__cap rail__cap--top">STUDIO PIGMENT</span>
+  <svg viewBox="0 0 40 600" preserveAspectRatio="none">
+    <path class="rail__base" d="M20 0 C13 100 27 200 20 300 C13 400 27 500 20 600"/>
+    <path class="rail__draw" id="railDraw" d="M20 0 C13 100 27 200 20 300 C13 400 27 500 20 600"/>
+    <circle class="rail__dot" id="railDot" cx="20" cy="0" r="3.4"/>
+  </svg>
+  <span class="rail__cap rail__cap--bot">MACHIDA / TOKYO</span>
+</div>
+
+<main id="top">
+
+<!-- ================= hero ================= -->
+<section class="hero" data-pig="vermilion">
+  <div class="wrap hero__grid">
+    <div>
+      <p class="hero__eyebrow label"><i></i>Oekaki Movie Studio — since Machida, Tokyo</p>
+      <h1>
+        <span class="ln"><span>線が動きだすと、</span></span>
+        <span class="ln"><span>言葉より速く<em>伝わる</em></span></span>
+      </h1>
+      <p class="hero__lead">
+        スタジオピグメントは、手描きのイラストが紙の上で動きだす「お絵かきムービー」を軸にした映像スタジオです。
+        伝えたいことを、見た人がちゃんと持ち帰れる形にします。
+      </p>
+      <div class="hero__meta">
+        <span>会社紹介</span><span>商品・サービス紹介</span><span>採用</span><span>研修・展示会</span>
+      </div>
+    </div>
+
+    <div class="hero__art">
+      <svg class="draw" viewBox="0 0 460 420" role="img" aria-label="手描きの線で描かれたイラストのアニメーション">
+        <!-- paper -->
+        <rect x="24" y="24" width="412" height="372" fill="#fff" stroke="#E6E0D3" stroke-width="1.5"/>
+        <!-- bulb -->
+        <path class="s anim" style="--len:420" d="M230 92c-38 0-66 28-66 62 0 26 16 38 24 52 5 9 6 18 6 26h72c0-8 1-17 6-26 8-14 24-26 24-52 0-34-28-62-66-62z"/>
+        <path class="fill" d="M230 92c-38 0-66 28-66 62 0 26 16 38 24 52 5 9 6 18 6 26h72c0-8 1-17 6-26 8-14 24-26 24-52 0-34-28-62-66-62z"/>
+        <path class="s anim" style="--len:130" d="M206 254h48M212 270h36"/>
+        <!-- rays -->
+        <path class="s s--pig anim" style="--len:180" d="M230 52v-22M138 96 122 78M322 96l16-18M112 168H88M348 168h24"/>
+        <!-- arrow -->
+        <path class="s s--pig anim" style="--len:200" d="M230 296v52"/>
+        <path class="s s--pig anim" style="--len:80" d="M214 334l16 18 16-18"/>
+        <!-- audience -->
+        <path class="s anim" style="--len:120" d="M150 380a20 20 0 1 1 40 0"/>
+        <circle class="s anim" style="--len:70" cx="170" cy="352" r="11"/>
+        <path class="s anim" style="--len:120" d="M270 380a20 20 0 1 1 40 0"/>
+        <circle class="s anim" style="--len:70" cx="290" cy="352" r="11"/>
+      </svg>
+    </div>
+  </div>
+
+  <p class="hero__scroll"><i></i>SCROLL</p>
+</section>
+
+<!-- ================= band ================= -->
+<div class="band" aria-hidden="true">
+  <div class="band__track">
+    <span>HAND DRAWN<i>◆</i>STORY FIRST<i>◆</i>OEKAKI MOVIE<i>◆</i>手で描く、伝わる<i>◆</i></span>
+    <span>HAND DRAWN<i>◆</i>STORY FIRST<i>◆</i>OEKAKI MOVIE<i>◆</i>手で描く、伝わる<i>◆</i></span>
+  </div>
+</div>
+
+<!-- ================= concept ================= -->
+<section class="section" id="concept" data-pig="ultramarine">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="shead__row">
+        <span class="label label--pig">Concept</span><i></i>
+      </div>
+      <h2>顔料(ピグメント)は、<br>溶けずに色として残る。</h2>
+    </div>
+
+    <div class="concept">
+      <p class="vquote rv">
+        褪せない色のように、<em>記憶に残る時間</em>をつくる。
+        <small>STUDIO PIGMENT — CONCEPT</small>
+      </p>
+
+      <div class="concept__body">
+        <div class="rv rv-d1">
+          <p>
+            染料は水に溶けて広がりますが、顔料は粒のまま残り、色そのものとして定着します。
+            壁画や日本画の色が何百年も生きているのは、そこに顔料の粒があるからです。
+          </p>
+          <p>
+            映像も同じだと考えています。流れて消えていく情報ではなく、見終わったあとに一粒でも残るもの。
+            スタジオピグメントという屋号には、そんな映像をつくりたいという意味を込めました。
+          </p>
+          <p>
+            だから制作は、いきなり絵を描くところからは始めません。誰に、どこで、何を持ち帰ってほしいのか。
+            ヒアリングで受け取った言葉を一度ばらして、線と音の順番に組み直していきます。
+          </p>
+        </div>
+
+        <figure class="concept__media rv rv-d2">
+          <div class="media media--ratio">
+            <img src="https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=1200&q=70"
+                 alt="紙とペンで構成を書き出している机の様子" loading="lazy" decoding="async">
+          </div>
+          <figcaption>01 — 言葉を線の順番に組み直す</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= oekaki movie ================= -->
+<section class="section section--tint" id="movie" data-pig="vermilion">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="shead__row">
+        <span class="label label--pig">Oekaki Movie</span><i></i>
+      </div>
+      <h2>白い紙の上で、<br>手描きのイラストが動きだす。</h2>
+      <p>
+        お絵かきムービー(ホワイトボードアニメーション)は、描かれていく線をそのまま見せる映像手法です。
+        視線が線を追いかけるので、実写やスライドよりも「最後まで見てもらいやすい」という特徴があります。
+      </p>
+    </div>
+
+    <div class="explain">
+      <div class="rv">
+        <figure>
+          <div class="media media--ratio">
+            <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1200&q=70"
+                 alt="手を動かして図を描きながら内容を整理している様子" loading="lazy" decoding="async">
+          </div>
+          <figcaption>02 — 描く手が、そのまま説明になる</figcaption>
+        </figure>
+
+        <div class="frames" aria-hidden="true">
+          <div class="frame" data-n="01">
+            <svg viewBox="0 0 100 100"><path class="s" d="M22 70h20" filter="url(#rough)"/></svg>
+          </div>
+          <div class="frame" data-n="02">
+            <svg viewBox="0 0 100 100"><path class="s" d="M22 70h20l14-26" filter="url(#rough)"/>
+              <path class="s s--pig" d="M56 44h0" filter="url(#rough)"/></svg>
+          </div>
+          <div class="frame" data-n="03">
+            <svg viewBox="0 0 100 100">
+              <path class="s" d="M22 70h20l14-26 14 20 8-34" filter="url(#rough)"/>
+              <circle class="s s--pig" cx="78" cy="30" r="6" filter="url(#rough)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="rv rv-d1">
+        <ul class="merits">
+          <li>
+            <b>離脱されにくい</b>
+            <p>次に何が描かれるのかを追ってしまうため、視聴維持率が伸びやすい構造です。冒頭数秒で切られがちなWeb動画に向いています。</p>
+          </li>
+          <li>
+            <b>難しい話が伝わる</b>
+            <p>仕組み・工程・見えないサービスなど、実写では撮れないものを図にできます。専門用語を一枚の絵に置き換えられるのが強みです。</p>
+          </li>
+          <li>
+            <b>あとから思い出せる</b>
+            <p>ナレーションと手描きの絵が同時に入ることで、内容が視覚のフックとして残ります。説明会や商談後の記憶に効きます。</p>
+          </li>
+          <li>
+            <b>直しやすく、長く使える</b>
+            <p>実写のような再撮影が不要なため、サービス改定や年度更新の差し替えも部分的に対応できます。</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= service ================= -->
+<section class="section" id="service" data-pig="ochre">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="shead__row">
+        <span class="label label--pig">Service</span><i></i>
+      </div>
+      <h2>できること</h2>
+      <p>
+        ターゲットと使用メディアをうかがったうえで、尺・トーン・情報量を設計します。
+        お絵かきムービーを基本に、実写素材やモーショングラフィックスを組み合わせた構成にも対応します。
+      </p>
+    </div>
+
+    <div class="cards">
+      <article class="card rv" style="--c:var(--vermilion)">
+        <span class="card__chip"></span>
+        <h3>会社紹介ムービー</h3>
+        <p>沿革・理念・強みを一本の線でつなぎ、はじめて社名を知る人にも輪郭が残る構成にします。展示会やロビー上映のような音が出せない環境も想定して設計します。</p>
+        <div class="card__tags"><span>WEB SITE</span><span>展示会</span><span>商談</span></div>
+      </article>
+
+      <article class="card rv rv-d1" style="--c:var(--ultramarine)">
+        <span class="card__chip"></span>
+        <h3>商品・サービス紹介ムービー</h3>
+        <p>目に見えないサービスや、仕組みの説明が必要な商材ほど絵の出番です。導入の流れや料金体系など、文字で読むと止まってしまう部分を図解に置き換えます。</p>
+        <div class="card__tags"><span>LP</span><span>YouTube</span><span>営業資料</span></div>
+      </article>
+
+      <article class="card rv rv-d2" style="--c:var(--viridian)">
+        <span class="card__chip"></span>
+        <h3>採用ムービー</h3>
+        <p>仕事の一日、育成の流れ、働く人の考え方。写真では出しにくい社内の話も、イラストなら誇張せずに描けます。説明会と応募前のどちらで見せるかで構成を変えます。</p>
+        <div class="card__tags"><span>採用サイト</span><span>会社説明会</span><span>求人媒体</span></div>
+      </article>
+
+      <article class="card rv rv-d3" style="--c:var(--ochre)">
+        <span class="card__chip"></span>
+        <h3>研修・マニュアル・イベント</h3>
+        <p>手順や安全教育など、繰り返し見てもらう映像もつくります。章ごとに切り出して使えるよう、あとから分割・差し替えできる形でお渡しします。</p>
+        <div class="card__tags"><span>社内研修</span><span>マニュアル</span><span>イベント</span></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= process ================= -->
+<section class="section section--tint" id="process" data-pig="viridian">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="shead__row">
+        <span class="label label--pig">Process</span><i></i>
+      </div>
+      <h2>ヒアリングから納品まで、<br>ひとりの手で通します。</h2>
+      <p>
+        構成・イラスト・編集を分担せずに進めるため、途中で狙いがぶれません。
+        目安の期間は本編2〜3分でおよそ4〜6週間です。
+      </p>
+    </div>
+
+    <div class="steps">
+      <div class="step rv">
+        <span class="step__n">01</span>
+        <h3>ヒアリング<small>INTERVIEW</small></h3>
+        <p>誰に届けるのか、どこで再生されるのか、見た人にどうしてほしいのかを整理します。すでにある資料やサイトもあわせて拝見します。</p>
+      </div>
+      <div class="step rv rv-d1">
+        <span class="step__n">02</span>
+        <h3>ストーリー構成・絵コンテ<small>STORYBOARD</small></h3>
+        <p>伝える順番を決め、ナレーション原稿と絵コンテに落とします。ここで尺と情報量を確定させるため、最も時間をかける工程です。</p>
+      </div>
+      <div class="step rv rv-d2">
+        <span class="step__n">03</span>
+        <h3>イラスト制作<small>ILLUSTRATION</small></h3>
+        <p>絵柄のトーンを合わせながら、必要なカットを手描きで起こします。ブランドカラーや既存キャラクターがあれば反映します。</p>
+      </div>
+      <div class="step rv rv-d3">
+        <span class="step__n">04</span>
+        <h3>編集・ナレーション<small>EDIT &amp; VOICE</small></h3>
+        <p>描画のテンポ、音楽、テロップを合わせて仕上げます。ナレーションは声質のご相談から対応。字幕のみの構成も可能です。</p>
+      </div>
+      <div class="step rv rv-d4">
+        <span class="step__n">05</span>
+        <h3>納品・運用<small>DELIVERY</small></h3>
+        <p>掲載先に合わせた書き出しでお渡しします。縦型やサムネイル、章ごとの分割版など、使い回しやすい形も一緒にご用意します。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= works ================= -->
+<section class="section" id="works" data-pig="ultramarine">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="shead__row">
+        <span class="label label--pig">Works</span><i></i>
+      </div>
+      <h2>制作イメージ</h2>
+      <p>どんな課題に、どんな構成で応えているのか。想定シーン別にまとめています。</p>
+    </div>
+
+    <div class="filters rv" role="group" aria-label="制作イメージの絞り込み">
+      <button class="is-on" data-f="all">ALL</button>
+      <button data-f="company">会社紹介</button>
+      <button data-f="product">商品・サービス</button>
+      <button data-f="recruit">採用</button>
+      <button data-f="other">研修・イベント</button>
+    </div>
+
+    <div class="grid">
+      <article class="work rv" data-cat="company">
+        <div class="media">
+          <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=900&q=70"
+               alt="付箋を使って企画を整理しているデスク" loading="lazy" decoding="async">
+        </div>
+        <div class="work__cap"><h3>創業60年の歩みを3分に</h3><span>COMPANY</span></div>
+        <p class="work__note">製造業／展示会ブース上映・音なし字幕版</p>
+      </article>
+
+      <article class="work rv rv-d1" data-cat="product">
+        <div class="media">
+          <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=70"
+               alt="資料を広げて数字を確認している打ち合わせの様子" loading="lazy" decoding="async">
+        </div>
+        <div class="work__cap"><h3>料金体系を図解で整理</h3><span>PRODUCT</span></div>
+        <p class="work__note">SaaS／サービスサイト・営業同行用</p>
+      </article>
+
+      <article class="work rv rv-d2" data-cat="recruit">
+        <div class="media">
+          <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=70"
+               alt="複数人で話し合うチームの様子" loading="lazy" decoding="async">
+        </div>
+        <div class="work__cap"><h3>入社1年目の一日</h3><span>RECRUIT</span></div>
+        <p class="work__note">新卒採用／会社説明会オープニング</p>
+      </article>
+
+      <article class="work rv" data-cat="other">
+        <div class="media">
+          <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=900&q=70"
+               alt="ホワイトボードを使って説明している会議の様子" loading="lazy" decoding="async">
+        </div>
+        <div class="work__cap"><h3>安全教育マニュアル</h3><span>TRAINING</span></div>
+        <p class="work__note">物流／全6章・分割納品</p>
+      </article>
+
+      <article class="work rv rv-d1" data-cat="product">
+        <div class="media">
+          <img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=900&q=70"
+               alt="ノートパソコンとノートが置かれた作業机" loading="lazy" decoding="async">
+        </div>
+        <div class="work__cap"><h3>導入の流れを60秒で</h3><span>PRODUCT</span></div>
+        <p class="work__note">士業／LPファーストビュー・縦型併用</p>
+      </article>
+
+      <article class="work rv rv-d2" data-cat="company">
+        <div class="media">
+          <img src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=900&q=70"
+               alt="プレゼンテーションを行っているオフィスの様子" loading="lazy" decoding="async">
+        </div>
+        <div class="work__cap"><h3>理念を言葉と線で</h3><span>COMPANY</span></div>
+        <p class="work__note">福祉サービス／採用・広報兼用</p>
+      </article>
+    </div>
+
+    <p class="works__disclaimer">※ 掲載しているビジュアルは制作イメージです。</p>
+  </div>
+</section>
+
+<!-- ================= studio ================= -->
+<section class="section section--tint" id="studio" data-pig="ochre">
+  <div class="wrap">
+    <div class="shead rv">
+      <div class="shead__row">
+        <span class="label label--pig">Studio</span><i></i>
+      </div>
+      <h2>スタジオ概要</h2>
+    </div>
+
+    <div class="profile">
+      <dl class="dl rv">
+        <div class="dl__row"><dt>屋号</dt><dd>スタジオピグメント<small>Studio Pigment</small></dd></div>
+        <div class="dl__row"><dt>代表</dt><dd>竹下 紘平<small>Kohei Takeshita</small></dd></div>
+        <div class="dl__row"><dt>所在地</dt><dd>〒194-0012<br>東京都町田市金森</dd></div>
+        <div class="dl__row"><dt>事業内容</dt><dd>プロモーション用動画制作／お絵かきムービー(手描きイラスト動画)の企画・制作<small>ヒアリング・ストーリー構成・イラスト・編集・ナレーション手配まで一貫対応</small></dd></div>
+        <div class="dl__row"><dt>対応領域</dt><dd>会社紹介／商品・サービス紹介／採用／研修・マニュアル／展示会・イベント</dd></div>
+        <div class="dl__row"><dt>対応エリア</dt><dd>全国<small>打ち合わせはオンラインでも対応しています</small></dd></div>
+      </dl>
+
+      <figure class="rv rv-d1">
+        <div class="media media--tall">
+          <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=900&q=70"
+               alt="ノートパソコンで映像を編集している作業環境" loading="lazy" decoding="async">
+        </div>
+        <figcaption>03 — 構成から編集まで、同じ机の上で</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= footer ================= -->
+<footer class="foot" data-pig="vermilion">
+  <div class="wrap">
+    <p class="foot__mark">STUDIO<br><em>PIGMENT</em></p>
+    <p class="foot__sub">OEKAKI MOVIE / MACHIDA, TOKYO</p>
+
+    <div class="foot__bottom">
+      <nav class="foot__nav" aria-label="フッターナビゲーション">
+        <a href="#concept">Concept</a>
+        <a href="#movie">Oekaki Movie</a>
+        <a href="#service">Service</a>
+        <a href="#process">Process</a>
+        <a href="#works">Works</a>
+        <a href="#studio">Studio</a>
+      </nav>
+      <p class="foot__copy">© <span id="yr">2026</span> Studio Pigment</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  /* ---------- year ---------- */
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  /* ---------- header state ---------- */
+  var hdr = document.getElementById('hdr');
+  function onScrollHdr() {
+    hdr.classList.toggle('is-stuck', window.scrollY > 40);
+  }
+  onScrollHdr();
+
+  /* ---------- mobile drawer ---------- */
+  var burger = document.getElementById('burger');
+  var drawer = document.getElementById('drawer');
+  function closeDrawer() {
+    burger.classList.remove('is-open');
+    drawer.classList.remove('is-open');
+    burger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+  burger.addEventListener('click', function () {
+    var open = drawer.classList.toggle('is-open');
+    burger.classList.toggle('is-open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  drawer.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeDrawer); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeDrawer(); });
+
+  /* ---------- scroll reveal ---------- */
+  var revealObs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) {
+        en.target.classList.add('is-in');
+        revealObs.unobserve(en.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+  document.querySelectorAll('.rv').forEach(function (el) { revealObs.observe(el); });
+
+  /* ---------- pigment shift : the accent colour changes per section ---------- */
+  var pigments = {
+    vermilion:   ['#E0402B', '#C02E1B'],
+    ultramarine: ['#2A3FA8', '#22338A'],
+    ochre:       ['#E0A32E', '#A8741A'],
+    viridian:    ['#1C7A5A', '#15624A']
+  };
+  var root = document.documentElement;
+  var pigSections = document.querySelectorAll('[data-pig]');
+  var pigObs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      var p = pigments[en.target.getAttribute('data-pig')];
+      if (!p) return;
+      root.style.setProperty('--pig', p[0]);
+      root.style.setProperty('--pig-ink', p[1]);
+    });
+  }, { rootMargin: '-45% 0px -45% 0px' });
+  pigSections.forEach(function (s) { pigObs.observe(s); });
+
+  /* ---------- rail line drawn by scroll progress ---------- */
+  var railDraw = document.getElementById('railDraw');
+  var railDot = document.getElementById('railDot');
+  var railLen = railDraw ? railDraw.getTotalLength() : 0;
+  if (railDraw) {
+    railDraw.style.strokeDasharray = railLen;
+    railDraw.style.strokeDashoffset = railLen;
+  }
+
+  /* ---------- nav active state ---------- */
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav a'));
+  var sections = navLinks
+    .map(function (a) { return document.querySelector(a.getAttribute('href')); })
+    .filter(Boolean);
+
+  var ticking = false;
+  function onScroll() {
+    onScrollHdr();
+
+    if (railDraw) {
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      var p = h > 0 ? Math.min(Math.max(window.scrollY / h, 0), 1) : 0;
+      railDraw.style.strokeDashoffset = railLen * (1 - p);
+      var pt = railDraw.getPointAtLength(railLen * p);
+      railDot.setAttribute('cx', pt.x);
+      railDot.setAttribute('cy', pt.y);
+    }
+
+    var mid = window.scrollY + window.innerHeight * 0.42;
+    var current = null;
+    sections.forEach(function (sec) {
+      if (sec.offsetTop <= mid) current = sec.id;
+    });
+    navLinks.forEach(function (a) {
+      a.classList.toggle('is-active', a.getAttribute('href') === '#' + current);
+    });
+
+    ticking = false;
+  }
+  window.addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; window.requestAnimationFrame(onScroll); }
+  }, { passive: true });
+  onScroll();
+
+  /* ---------- works filter ---------- */
+  var filterBtns = document.querySelectorAll('.filters button');
+  var works = document.querySelectorAll('.work');
+  filterBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      filterBtns.forEach(function (b) { b.classList.remove('is-on'); });
+      btn.classList.add('is-on');
+      var f = btn.getAttribute('data-f');
+      works.forEach(function (w) {
+        var show = (f === 'all') || (w.getAttribute('data-cat') === f);
+        w.classList.toggle('is-hidden', !show);
+      });
+    });
+  });
+
+  /* ---------- image fallback : keep the layout intact if a photo fails ---------- */
+  document.querySelectorAll('.media img').forEach(function (img) {
+    img.addEventListener('error', function () { img.style.display = 'none'; });
+  });
+})();
+</script>
+</body>
+</html>
